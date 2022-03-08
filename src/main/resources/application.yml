@@ -1,0 +1,64 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ws-generali-noemisation
+  datasource:
+    url: jdbc:as400://TERSUDT.almerys.local;naming=system;libraries=BOOTTEST;socket timeout=30000;thread used=false;transaction isolation=read commited;translate binary=true;date format=iso;prompt=false
+    username: WS_NOE
+    password: whbpl7da
+    driver-class-name: com.ibm.as400.access.AS400JDBCDriver
+    hikari:
+      connection-test-query: values 1
+  jpa:
+    database-platform: org.hibernate.dialect.DB2400Dialect
+    hibernate:
+      ddl-auto: none
+  mvc:
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+  main:
+    allow-bean-definition-overriding: true
+
+
+keycloaks:
+  - realm: anonymous
+    auth-server-url: https://www.integration.almerys.com/auth
+    bearer-only: true
+    resource:
+    credentials:
+      secret:
+  - realm: SPS
+    auth-server-url: https://rec.client.almerys.com/auth
+    ssl-required: external
+    resource: noemisation-reporting-back
+    credentials:
+      secret: a31a2d5f-b790-4aa1-b2fa-eadad85b0cd7
+    bearer-only: true
+    principal-attribute: preferred_username
+    confidential-port: 0
+
+logging:
+  level:
+    tomcat: TRACE
+    root: info
+    org:
+      hibernate: error
+      springframework.web: info
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+
+swagger:
+  starter:
+    serviceTitle: Customer integration referential
+    serviceDescription: Store a referential for customers and integration parameters
+    ignoredServicesPattern: /error.*, /[45]0[04], /api-doc/.*, /actuator.*
